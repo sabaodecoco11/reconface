@@ -1,0 +1,5 @@
+org.springframework.context.ApplicationListener=\
+  br.ufg.reconface.bash.AppStartingListener,\
+  br.ufg.reconface.bash.AppStartedListener,\
+  br.ufg.reconface.bash.AppFailedListener,\
+  br.ufg.reconface.bash.PortListener

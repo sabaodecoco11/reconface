@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AuthFace</title>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+</head>
+<body>
+
+<h1>aaaaaaa</h1>
+
+<script>
+
+    // https://www.nashvail.me/blog/canvas-image/
+
+    $(document).ready(function () {
+
+        var myCanvas = document.getElementById('my-canvas');
+        var myContext = myCanvas.getContext('2d');
+
+        var img = new Image();
+        img.src = 'https://www.prensalatina.com.br/images/2019/abril/24/Dilma-Rousseff.jpg';
+        img.onload = () => {
+            myContext.drawImage(img, 0, 0);
+        };
+
+        console.log(myCanvas.toDataURL());
+
+        $("#btnSubmit").on("click", function () {
+
+            var form = $('#fileUploadForm')[0];
+            var data = new FormData(form);
+
+            var blob = new Blob([]);
+            var fileOfBlob = new File([blob], 'aFileName.json');
+            data.append("file", fileOfBlob);
+
+            $.ajax({
+                type: "POST",
+                url: 'http://192.168.1.170:8086/authface/users/55/file',
+                enctype: 'multipart/form-data',
+                data: data,
+                processData: false,
+                contentType: false,
+                cache: false
+            });
+        })
+    });
+
+</script>
+
+<form method="POST" enctype="multipart/form-data" id="fileUploadForm">
+<!--    <input type="file" name="file" id="file"/><br/><br/>-->
+    <canvas id="my-canvas"></canvas>
+    <input type="button" value="Submit" id="btnSubmit"/>
+</form>
+
+</body>
+</html>
