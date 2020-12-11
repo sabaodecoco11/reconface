@@ -22,14 +22,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Calendar;
 
 @Service
 public class StorageService {
@@ -89,16 +86,5 @@ public class StorageService {
             return new Response(-1, CoreMessage.ME_CADASTRO_01);
 
         return new Response(userId, CoreMessage.MS_CADASTRO_01);
-    }
-
-    public Path saveInTmp(byte[] bytes)  throws IOException {
-
-        String filename = StringUtils.cleanPath("foto_".concat(String.valueOf(Calendar.getInstance().getTimeInMillis())).concat(".jpg"));
-
-        Path targetLocation = Path.of("/tmp/").resolve(filename);
-
-        Files.write(targetLocation, bytes);
-
-        return targetLocation;
     }
 }
