@@ -51,7 +51,7 @@ public class Users {
     }
 
     @PostMapping("/{id}/file")
-    public ResponseEntity uploadPhoto(@NotBlank(message = "invalid!") @RequestParam MultipartFile file, @PathVariable Long id) throws IOException {
+    public ResponseEntity uploadPhoto(@RequestParam MultipartFile file, @PathVariable Long id) throws IOException {
         if(!file.isEmpty())
             return new ResponseEntity<>(storageService.store(file.getBytes(), id), HttpStatus.OK);
 
@@ -61,7 +61,7 @@ public class Users {
 
     @PostMapping("/{id}/auth")
     public ResponseEntity auth(@RequestParam MultipartFile file, @PathVariable Long id) {
-        if( !file.isEmpty()) {
+        if(!file.isEmpty()) {
             try {
                 long userFound = facialRecognitionService.recognize(file.getBytes(), id);
 

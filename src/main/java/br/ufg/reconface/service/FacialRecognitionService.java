@@ -22,6 +22,7 @@ import org.bytedeco.opencv.opencv_face.FaceRecognizer;
 import org.bytedeco.opencv.opencv_face.LBPHFaceRecognizer;
 import org.bytedeco.opencv.opencv_objdetect.CascadeClassifier;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
@@ -35,16 +36,13 @@ import static org.bytedeco.opencv.global.opencv_imgproc.*;
 public class FacialRecognitionService {
 
     private final Path fileStorageLocation;
-    private static final double TRESHOLD = 150D;
+    private static final double TRESHOLD = 130D;
 
-    @Autowired
-    String defaultFaceName;
+    @Value("${user.face.filename}")
+    private String defaultPhotoName;
 
-    @Autowired
-    String defaultPhotoName;
-
-    @Autowired
-    String defaultExtension;
+    @Value("${user.face.file.extension}")
+    private String defaultExtension;
 
     @Autowired
     public FacialRecognitionService(AppPropertiesService appPropertiesService) {
@@ -63,7 +61,9 @@ public class FacialRecognitionService {
 
             Path rectTargetLocation = this.fileStorageLocation.resolve(String.valueOf(userId));
             String rectFileName = defaultPhotoName.concat(".").concat(defaultExtension);
-            imwrite(rectTargetLocation.resolve(rectFileName).toString(), capturedFace);//salvando retangulo da imagem
+
+            //salvando retangulo da imagem
+            imwrite(rectTargetLocation.resolve(rectFileName).toString(), capturedFace);
 
             Path classifierPath = this.fileStorageLocation.resolve(getClassifierName(userId));
             System.out.println(classifierPath.toString());
@@ -95,41 +95,6 @@ public class FacialRecognitionService {
             return false;
     }
 
-
-    @Deprecated
-    public long recognize(Path imagePath, long userId) {
-
-        Mat capturedFace = captureFace(imagePath.normalize().toString());
-
-        if (Optional.ofNullable(capturedFace).isEmpty()) {
-            return -1;
-        }
-
-        FaceRecognizer faceRecognizer = LBPHFaceRecognizer.create();
-
-        Path classifierPath = this.fileStorageLocation.resolve(getClassifierName(userId));
-
-        try {
-
-            faceRecognizer.read(classifierPath.toUri().getPath());
-
-        } catch (Exception e) {
-            return -1;
-        }
-
-        faceRecognizer.setThreshold(TRESHOLD);
-
-        IntPointer label = new IntPointer(1);
-        DoublePointer confidence = new DoublePointer(1);
-
-        faceRecognizer.predict(capturedFace, label, confidence);
-
-        faceRecognizer.close();
-
-        int predict = label.get(0);
-
-        return predict;
-    }
 
     public long recognize(byte[] imageBytes, long userId) throws Exception{
 
@@ -196,42 +161,4 @@ public class FacialRecognitionService {
             return null;
     }
 
-    @Deprecated
-    private Mat captureFace(String imagePath) {
-
-        Mat imageGray = new Mat();
-
-        System.out.println("em capture face: " + imagePath);
-        Mat imageColor = imread(imagePath);
-
-        cvtColor(imageColor, imageGray, COLOR_BGRA2GRAY);
-
-        RectVector detectedFace = new RectVector();
-
-        CascadeClassifier detectorFace = new CascadeClassifier("src/main/resources/haarcascade/haarcascade-frontalface-alt.xml");
-        detectorFace.detectMultiScale(imageGray,
-                detectedFace,
-                1.1,
-                1,
-                0,
-                new Size(40, 40),
-                new Size(1900, 1900));
-
-        detectorFace.close();
-
-        if(detectedFace.size() > 0){
-            Rect dataFace = detectedFace.get(0);
-
-            rectangle(imageColor, dataFace, new Scalar(0, 0, 255, 0));
-
-            Mat capturedFace = new Mat(imageGray, dataFace);
-            resize(capturedFace, capturedFace, new Size(160, 160));
-
-            imwrite(imagePath.replace(defaultFaceName, defaultPhotoName), capturedFace);//escrevendo retangulo da imagem com outro nome
-
-            return capturedFace;
-        }
-        else
-            return null;
-    }
 }

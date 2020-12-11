@@ -8,10 +8,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 @SpringBootApplication
-public class AuthfaceApplication {
+public class ReconfaceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AuthfaceApplication.class, args);
+        SpringApplication.run(ReconfaceApplication.class, args);
     }
 
     @Bean

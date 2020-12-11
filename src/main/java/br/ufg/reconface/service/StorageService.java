@@ -20,6 +20,7 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -39,11 +40,11 @@ public class StorageService {
 
     private final FacialRecognitionService facialRecognitionService;
 
-    @Autowired
-    String defaultFaceName;
+    @Value("${user.face.filename}")
+    private String defaultPhotoName;
 
-    @Autowired
-    String defaultExtension;
+    @Value("${user.face.file.extension}")
+    private String defaultExtension;
 
 
     @Autowired
@@ -64,7 +65,7 @@ public class StorageService {
 
     public String getUserRegisteredFace(long id) {
         try {
-                Path path = fileStorageLocation.resolve(String.valueOf(id)).resolve(defaultFaceName + "." + defaultExtension);
+                Path path = fileStorageLocation.resolve(String.valueOf(id)).resolve(defaultPhotoName + "." + defaultExtension);
                 byte[] imageBytes = Files.readAllBytes(path);
                 return Base64.encodeBase64String(imageBytes);
         }
@@ -84,16 +85,8 @@ public class StorageService {
         if(Files.notExists(userFolder))
             Files.createDirectories(userFolder);
 
-        Path targetLocation;
-
-        String filename = defaultFaceName + "." + defaultExtension;
-
-        targetLocation = userFolder.resolve(filename);
-
         if (!facialRecognitionService.generateClassifier(bytes, userId))
             return new Response(-1, CoreMessage.ME_CADASTRO_01);
-
-//        Files.write(targetLocation, bytes);//salvando imagem original
 
         return new Response(userId, CoreMessage.MS_CADASTRO_01);
     }
