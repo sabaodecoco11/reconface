@@ -72,7 +72,7 @@ public class FacialRecognitionService {
             LBPHFaceRecognizer lbph = LBPHFaceRecognizer.create();
 
             lbph.setRadius(3);
-            lbph.setNeighbors(12);
+            lbph.setNeighbors(8);
             lbph.setGridX(8);
             lbph.setGridY(8);
             lbph.setThreshold(TRESHOLD);
